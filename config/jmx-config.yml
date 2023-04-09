@@ -1,0 +1,27 @@
+---
+startDelaySeconds: 0
+rules:
+  - pattern: "com.facebook.presto.execution<name=TaskManager><>(.+TotalCount.*): (.*)"
+    name: "presto taskmanager_$1"
+    help: "Presto: TaskManager Stats $1"
+    type: COUNTER
+  - pattern: "com.facebook.presto.execution<name=QueryManager><>(.+AllTime.+): (.*)"
+    name: "presto querymanager_$1"
+    help: "Presto: QueryManager $1"
+    type: GAUGE
+  - pattern: "com.facebook.presto.execution<name=QueryManager><>(.+TotalCount.*): (.*)"
+    name: "presto querymanager_$1"
+    help: "Presto: QueryManager $1"
+    type: COUNTER
+  - pattern: "com.facebook.presto.memory<name=ClusterMemoryManager><>(.+): (.*)"
+    name: "presto clustermemorymanager_$1"
+    help: "Presto: ClusterMemoryManager $1"
+    type: GAUGE
+  - pattern: "com.facebook.presto.memory<type=ClusterMemoryPool, name=(.*)><>(.+): (.*)"
+    name: "presto clustermemorypool_$1_$2"
+    help: "Presto ClusterMemoryPool: $1 $2"
+    type: GAUGE
+  - pattern: "com.facebook.presto.failureDetector<name=HeartbeatFailureDetector><>ActiveCount: (.*)"
+    name: "presto heartbeatdetector_activecount"
+    help: "Presto: HeartBeat Detector ActiveCount"
+    type: GAUGE

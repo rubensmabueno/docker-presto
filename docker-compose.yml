@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  coordinator:
+    build: .
+    ports:
+      - "8080:8080"
+      - "5556:5556"
+    volumes:
+      - "./config/coordinator.properties:/etc/presto/config.properties"
+      - "./config/node.properties:/etc/presto/node.properties"
+      - "./config/log.properties:/etc/presto/log.properties"
+      - "./config/jvm.config:/opt/presto/etc/jvm.config"
+      - "./config/catalog:/etc/presto/catalog"
+      - "./config/jmx-config.yml:/opt/jmx_prometheus_javaagent/config.yml"
+      - "./tmp/coordinator/data:/data"
+      - "./tmp/coordinator/worker:/presto"
+    healthcheck:
+      test: [ "CMD", "presto", "--server", "localhost:5556", "--execute", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  workers:
+    build: .
+    volumes:
+      - "./config/worker.properties:/etc/presto/config.properties"
+      - "./config/node.properties:/etc/presto/node.properties"
+      - "./config/log.properties:/etc/presto/log.properties"
+      - "./config/jvm.config:/opt/presto/etc/jvm.config"
+      - "./config/catalog:/etc/presto/catalog"
+      - "./config/jmx-config.yml:/opt/jmx_prometheus_javaagent/config.yml"
+      - "./tmp/workers/data:/data"
+      - "./tmp/workers/worker:/presto"
+    healthcheck:
+      test: [ "CMD", "presto", "--server", "localhost:5556", "--execute", "SELECT * FROM system.runtime.nodes WHERE http_uri LIKE '%<worker-ip>%'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      coordinator:
+        condition: service_healthy
