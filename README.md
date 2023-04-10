@@ -60,7 +60,7 @@ services:
       - "./tmp/coordinator/data:/data"
       - "./tmp/coordinator/worker:/presto"
     healthcheck:
-      test: [ "CMD", "presto", "--server", "localhost:5556", "--execute", "SELECT 1" ]
+      test: [ "CMD", "curl", "--fail", "http://localhost:8080/v1/info" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -76,7 +76,7 @@ services:
       - "./tmp/worker_1/data:/data"
       - "./tmp/worker_1/worker:/presto"
     healthcheck:
-      test: [ "CMD", "presto", "--server", "localhost:5556", "--execute", "SELECT * FROM system.runtime.nodes WHERE http_uri LIKE '%<worker-ip>%'" ]
+      test: [ "CMD", "curl", "--fail", "http://localhost:8080/v1/info" ]
       interval: 10s
       timeout: 5s
       retries: 3
